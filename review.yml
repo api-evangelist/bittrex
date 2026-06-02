@@ -1,0 +1,129 @@
+aid: bittrex
+name: Bittrex
+review_type: provider-shutdown
+verdict: dead
+spec_produced: false
+reviewed_on: '2026-05-29'
+reviewer: Kin Lane <kin@apievangelist.com>
+
+summary: >-
+  Bittrex's developer presence is gone. The v3 API documentation site
+  (https://bittrex.github.io/api/v3) returns HTTP 404, the Bittrex GitHub
+  organization has no public repositories, and the v3 WebSocket / REST hosts
+  (socket-v3.bittrex.com, api.bittrex.com) no longer resolve. The main
+  bittrex.com domain still serves an HTML page, but its title and body are
+  the post-shutdown "Thanks from Bittrex" wind-down notice (it loads a
+  shutdown-content div). No AsyncAPI spec was produced because there is no
+  longer a publicly documented WebSocket surface to describe without
+  fabrication.
+
+shutdown_timeline:
+  - date: '2023-03-31'
+    event: >-
+      Bittrex Inc. (US) announced it would wind down US operations effective
+      April 30, 2023, citing the regulatory environment.
+  - date: '2023-04-17'
+    event: >-
+      US SEC filed a civil enforcement action against Bittrex Inc. and former
+      CEO William Shihara, alleging operation of an unregistered exchange,
+      broker, and clearing agency.
+  - date: '2023-04-30'
+    event: Bittrex US ceased trading for US customers.
+  - date: '2023-05-08'
+    event: >-
+      Bittrex Inc. filed for Chapter 11 bankruptcy in the District of
+      Delaware (case 23-10597).
+  - date: '2023-08-10'
+    event: >-
+      Bittrex Inc. settled with the SEC for approximately USD 24 million.
+  - date: '2023-12-04'
+    event: >-
+      Bittrex Global (Liechtenstein) announced it would also wind down,
+      ceasing all trading on December 4, 2023.
+
+evidence:
+  - probe: HTTP HEAD https://bittrex.github.io/api/v3
+    status: 404
+    observed_on: '2026-05-29'
+    note: Documented WebSocket / REST reference URL no longer served.
+  - probe: HTTP HEAD https://bittrex.github.io/api/v3/
+    status: 404
+    observed_on: '2026-05-29'
+  - probe: HTTP HEAD https://bittrex.github.io/
+    status: 404
+    observed_on: '2026-05-29'
+  - probe: HTTPS resolve socket-v3.bittrex.com
+    status: 000-unresolved
+    observed_on: '2026-05-29'
+    note: v3 SignalR WebSocket hub host no longer resolves.
+  - probe: HTTPS resolve api.bittrex.com/v3
+    status: 000-unresolved
+    observed_on: '2026-05-29'
+    note: v3 REST host no longer resolves.
+  - probe: GET https://bittrex.com
+    status: 200
+    observed_on: '2026-05-29'
+    note: >-
+      Page title is "Thanks from Bittrex"; body contains a #shutdown-content
+      markdown container; no trading UI, no developer links. Confirmed
+      post-shutdown landing page.
+  - probe: GET https://global.bittrex.com
+    status: 301-to-bittrex.com
+    observed_on: '2026-05-29'
+    note: Bittrex Global redirects to the shutdown notice on bittrex.com.
+  - probe: GET https://github.com/Bittrex
+    status: 200
+    observed_on: '2026-05-29'
+    note: >-
+      Organization page reports "This organization has no public repositories"
+      and "This organization has no public members." The bittrex.github.io
+      Pages source repo is gone, which matches the 404 on the docs site.
+
+urls:
+  documented_developer_url: https://bittrex.github.io/api/v3
+  github_org: https://github.com/Bittrex
+  corporate_landing: https://bittrex.com
+  bittrex_global_legacy: https://global.bittrex.com
+  v3_websocket_host_historic: https://socket-v3.bittrex.com
+  v3_rest_host_historic: https://api.bittrex.com/v3
+
+historic_surface_for_context_only:
+  note: >-
+    Listed here only to document what USED to exist; not used as the basis
+    for any new spec. Source is the registry entry that pointed at the now-404
+    docs site. No live reference page was available to verify the schema, so
+    no AsyncAPI artifact was generated.
+  protocol: SignalR (ASP.NET) over WebSockets, JSON payloads (gzip+base64)
+  hub_url_historic: https://socket-v3.bittrex.com/signalr
+  hub_name_historic: c3
+  subscribe_method_historic: Subscribe
+  channels_known_to_have_existed:
+    - heartbeat
+    - ticker_{marketSymbol}
+    - market_summary_{marketSymbol}
+    - market_summaries
+    - tickers
+    - trade_{marketSymbol}
+    - candle_{marketSymbol}_{interval}
+    - orderbook_{marketSymbol}_{depth}
+    - balance (authenticated)
+    - order (authenticated)
+    - execution (authenticated)
+    - deposit (authenticated)
+    - conditional_order (authenticated)
+
+decision: >-
+  Do not publish an AsyncAPI 2.6 spec. Bittrex's documented WebSocket
+  surface is unreachable (docs 404, hub host unresolved, GitHub org empty),
+  and the company has been wound down since 2023. Producing a spec now
+  would require fabricating schemas from memory rather than verifying
+  against a live reference, which violates the no-fabrication rule.
+
+followups:
+  - >-
+    Leave apis.yml untouched per the task's hard rule (only update apis.yml
+    if a spec is created).
+  - >-
+    Consider downgrading or retiring this provider entry in any upstream
+    catalog; the documented URL is permanently 404 and the company no
+    longer operates.
