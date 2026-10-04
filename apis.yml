@@ -39,7 +39,6 @@ apis:
   - name: Bittrex
     description: "Next Generation Crypto Trading Platform"
     humanURL: https://bittrex.github.io/api/v3
-    baseURL: https://bittrex.github.io/api/v3
     tags:
       - Cryptocurrency
     properties:
