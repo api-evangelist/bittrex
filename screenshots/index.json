@@ -1,0 +1,11 @@
+[
+  {
+    "repo": "bittrex",
+    "captured_at": "2026-10-11T183553",
+    "source_url": "https://bittrex.github.io/api/v3",
+    "source_type": "Website",
+    "file": "bittrex-2026-10-11T183553.png",
+    "bytes": 27598,
+    "capture": "playwright-local"
+  }
+]
